@@ -1,0 +1,80 @@
+---
+import getImages from "../../services/getImages";
+import Layout from "../../layouts/Layout.astro";
+const { extension } = Astro.params;
+const data = await getImages(extension as string, 1);
+---
+
+<Layout title={String(extension)}>
+  <div class="container mx-auto">
+    {
+      data.data.map((e) =>
+        e.type_file === "webm" ? (
+          <video
+            class="w-full mb-3 object-cover rounded-xl"
+            src={e.file_url}
+            autoplay
+            muted
+          />
+        ) : (
+          <div
+            class="w-full mb-8 break-inside-avoid"
+            style={`height: :${e.height};`}
+          >
+            <img
+              loading="lazy"
+              class="w-full object-cover rounded-xl shadow-lg item"
+              src={e.preview_url}
+            />
+            <div class="flex items-center gap-2 mt-3">
+              <div class="rounded-full bg-neutral-200 shadow-xl w-8 max-w-8 h-8 max-h-8 place-content-center grid font-semibold uppercase">
+                {() => {
+                  return e.owner.split("")[0];
+                }}
+              </div>
+              <h2 class="">{e.owner}</h2>
+            </div>
+          </div>
+        )
+      )
+    }
+  </div>
+</Layout>
+<script src="https://cdn.jsdelivr.net/npm/macy@2" is:inline></script>
+<script
+  src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"
+  is:inline></script>
+<script is:inline>
+  imagesLoaded(document.querySelector(".container"), () => {
+    let macy = Macy({
+      container: `.container`,
+      trueOrder: false,
+      waitForImages: true,
+      margin: {
+        x:15,
+        y:15
+      },
+      columns: 7,
+      breakAt: {
+        1600: 6,
+        1300: 5,
+        1000: 4,
+        800: 3,
+        500: 2,
+        300: 1,
+      },
+    });
+    macyInstance.runOnImageLoad(function () {
+      console.log("Every time an image loads I get fired");
+      macyInstance.recalculate(true);
+    }, true);
+  });
+</script>
+<style>
+  .container {
+    /* columns: 5; */
+    /* margin: 0 auto;; */
+    /* display: grid;
+    grid-template-columns: repeat(7, 1fr); */
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+
+---
+
+<h1>COLLECTION</h1>
+
+<script is:inline>
+  async function postCollection() {
+    const data = {
+      id: 9688539,
+      owner: "ruff23",
+      rating: "explicit",
+      tags: "5girls amity_blight camila_noceda dark-skinned_female dark_skin disney eda_clawthorne green_hair human latina light-skinned_female light_skin long_hair luz_noceda mature mature_female milf monusdoko mother pointy_ears teenage_girl teenager the_owl_house willow_park young younger_female",
+      source: "",
+      file_url:
+        "https://api-cdn.rule34.xxx/images/264/09a4cfb8a2abac150707e179792d259e.png",
+      sample_url:
+        "https://api-cdn.rule34.xxx/samples/264/sample_09a4cfb8a2abac150707e179792d259e.jpg",
+      preview_url:
+        "https://api-cdn.rule34.xxx/thumbnails/264/thumbnail_09a4cfb8a2abac150707e179792d259e.jpg",
+      type_file: "rule34",
+      height: 4929,
+      width: 2225,
+      sample_height: 1883,
+      sample_width: 850,
+    };
+    const res = await fetch("http://localhost:3000/api/user/collection", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials:"include",
+      method: "PUT",
+      body: JSON.stringify({ image: data, id: "65e88a135f5862d8d5de9f75" }),
+    });
+    const jsonData = await res.json();
+    console.log(jsonData);
+  }
+  postCollection();
+</script>

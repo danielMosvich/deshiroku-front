@@ -1,0 +1,43 @@
+---
+import Layout from "@/layouts/Layout.astro";
+const { user } = Astro.params;
+// console.log(id)
+import getUser from "@/services/getUser";
+const dataEntire = await getUser(String(user));
+const data = dataEntire.data;
+console.log(data);
+---
+
+<Layout title={String(user)}>
+  <h2>
+    {
+      data && (
+        <div>
+          <h2>{data.name}</h2>
+          <h2>{data.username}</h2>
+
+          <div>
+            {data.collections.map((e) => {
+              return (
+                <div class="bg-red-500 w-fit">
+                  {e.name}
+                  <ul class="w-72 flex flex-wrap">
+                    {e.images.map((e) => {
+                      return (
+                        <img
+                          class="w-1/2 h-32 object-cover"
+                          src={e.preview_url}
+                          alt=""
+                        />
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )
+    }
+  </h2>
+</Layout>
