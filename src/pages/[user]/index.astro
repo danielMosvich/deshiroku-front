@@ -6,6 +6,7 @@ import getUser from "@/services/getUser";
 const dataEntire = await getUser(String(user));
 const data = dataEntire.data;
 console.log(data);
+
 ---
 
 <Layout title={String(user)}>
@@ -19,7 +20,10 @@ console.log(data);
           <div>
             {data.collections.map((e) => {
               return (
-                <div class="bg-red-500 w-fit">
+                <a
+                  href={`/${user}/${e.name.replace(" ", "-")}/${e._id}`}
+                  class="bg-red-500 w-fit"
+                >
                   {e.name}
                   <ul class="w-72 flex flex-wrap">
                     {e.images.map((e) => {
@@ -32,7 +36,7 @@ console.log(data);
                       );
                     })}
                   </ul>
-                </div>
+                </a>
               );
             })}
           </div>

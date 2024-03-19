@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 
 function PostById({ data }) {
-  // const [user, setUser] = useState(null);
-  // const [collectionSelect, setCollectionSelect] = useState("");
   const [defaultCollection, setDefaultCollection] = useState(null);
   const [saved, setSaved] = useState(undefined);
   async function handleSave() {
     if (document.cookie) {
-      console.log("OBJET SAVED: " + data, "IN :" + defaultCollection.name);
-      // console.log(collectionSelect);
       const resp = await fetch("http://localhost:3000/api/user/collection", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,6 +29,36 @@ function PostById({ data }) {
       }
     }
   }
+  async function handleRemove() {
+    if (document.cookie) {
+      const fileUrl = data.file_url;
+      const resp = await fetch("http://localhost:3000/api/user/collection", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          id_collection: defaultCollection.id,
+          url: fileUrl,
+        }),
+      });
+      const response = await resp.json();
+      if (response.success) {
+        async function getProfile() {
+          const res = await fetch("http://localhost:3000/api/user/profile", {
+            method: "GET",
+            credentials: "include",
+          });
+          const data = await res.json();
+          localStorage.setItem("user", JSON.stringify(data.data));
+        }
+        getProfile();
+        setSaved(false);
+      } else {
+        alert(response.message);
+      }
+    }
+  }
+
   useEffect(() => {
     // ! ESTO VERIFICA SI ES QUE EXISTE UNA COLLECTION POR DEFECTO DONDE GUARDAR LAS IMAGENES.
     const localStorageDefaultCollection =
@@ -44,52 +70,27 @@ function PostById({ data }) {
       setDefaultCollection(parsedLocalStorageDefaultCollection);
 
     const localStorageUser = localStorage.getItem("user");
-    const parsedLocalStorageUser = JSON.parse(localStorageUser);
-    if (parsedLocalStorageUser) {
-      console.log("SOME");
-      const index = parsedLocalStorageUser.collections.findIndex(
-        (e) => e._id === parsedLocalStorageDefaultCollection.id
-      );
-      if (index !== -1) {
-        const match = parsedLocalStorageUser.collections[index].images.some(
-          (e) => e.file_url === data.file_url
+    // console.log(localStorageUser)
+    if (localStorageUser) {
+      const parsedLocalStorageUser = JSON.parse(localStorageUser);
+      if (parsedLocalStorageUser) {
+        console.log("SOME");
+        const index = parsedLocalStorageUser.collections.findIndex(
+          (e) => e._id === parsedLocalStorageDefaultCollection.id
         );
-        setSaved(match);
-        console.log("SE ESTABLECE :", match);
-      } else {
-        console.log("SE ESTABLECE NO GUARDADo");
-        setSaved(false);
+        if (index !== -1) {
+          const match = parsedLocalStorageUser.collections[index].images.some(
+            (e) => e.file_url === data.file_url
+          );
+          setSaved(match);
+          console.log("SE ESTABLECE :", match);
+        } else {
+          console.log("SE ESTABLECE NO GUARDADo");
+          setSaved(false);
+        }
       }
     }
   }, []);
-  //   useEffect(() => {
-  //     const localStorageUser = localStorage.getItem("user");
-  //     if (localStorageUser) {
-  //       try {
-  //         const localUser = JSON.parse(localStorageUser);
-  //         console.log(localUser)
-  //         if(localUser.collections){
-  //           // console.log("CAN READ COLLECTIONS")
-  //           const collections = localUser.collections
-  //           const indexCompareCollection = collections.findIndex(e => e._id === )
-  //         }
-  //         // if (localUser && localUser.collections) {
-  //         //   const indexMatch = localUser.collections.findIndex(
-  //         //     (e) => e._id === defaultCollection.id
-  //         //   );
-  //         //   if (indexMatch !== -1 && localUser.collections[indexMatch].images) {
-  //         //     const match = localUser.collections[indexMatch].images.some(
-  //         //       (e) => e.file_url === data.file_url
-  //         //     );
-  //         //     setSaved(match);
-  //         //     console.log(match);
-  //         //   }
-  //         // }
-  //       } catch (error) {
-  //         console.error("Error al parsear los datos del usuario en localStorage:", error);
-  //       }
-  //     }
-  // }, []);
 
   return (
     <div className="pt-4">
@@ -136,16 +137,31 @@ function PostById({ data }) {
         )}
         <div className="p-5 w-1/2">
           <div className="flex gap-3 justify-end">
-            <button className="bg-white px-4 py-3 rounded-full capitalize text-black shadow-lg font-semibold">
-              descargar
-            </button>
+            {data.file_url && (
+              <a
+                className="bg-white px-4 py-3 rounded-full capitalize text-black shadow-lg font-semibold"
+                target="_blank"
+                href={data.file_url}
+                download
+              >
+                descargar
+              </a>
+            )}
             {defaultCollection && <button>{defaultCollection.name}</button>}
             {saved === undefined ? (
-              <button className="px-4 rounded-full ">load</button>
+              <button className="px-4 rounded-full text-white">loading</button>
             ) : saved ? (
-              <button className="px-4 rounded-full text-white bg-neutral-900">guardado</button>
+              <button
+                className="px-4 rounded-full text-white font-semibold bg-neutral-900"
+                onClick={handleRemove}
+              >
+                guardado
+              </button>
             ) : (
-              <button className="px-4 rounded-full text-white bg-red-500" onClick={handleSave}>
+              <button
+                className="px-4 rounded-full text-white font-semibold bg-red-500"
+                onClick={handleSave}
+              >
                 guardar
               </button>
             )}
