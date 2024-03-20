@@ -8,8 +8,8 @@ const { collection, id } = Astro.params;
 // console.log(data)
 ---
 
-<Layout name={String(collection)}>
-  <Collection client:load id={id} />
+<Layout title={String(collection)}>
+  <Collection client:load id={id}/>
 </Layout>
 <!-- <script is:inline>
   async function getCollection() {

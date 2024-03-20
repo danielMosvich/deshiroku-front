@@ -21,6 +21,7 @@ export interface ImagesProps {
     width:         number;
     sample_height: number;
     sample_width:  number;
+    extension:string
 }
 
 // Converts JSON strings to/from your types

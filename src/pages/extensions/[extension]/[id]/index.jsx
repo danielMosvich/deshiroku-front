@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
-
+import PopoverButton from "@/components/popoverButton";
 function PostById({ data }) {
   const [defaultCollection, setDefaultCollection] = useState(null);
+  const [collections, setCollections] = useState(null);
   const [saved, setSaved] = useState(undefined);
-  async function handleSave() {
+  // const [userData, setUserData] = useState(undefined)
+  async function handleSave(id) {
+    console.log("SAVE");
     if (document.cookie) {
+      console.log("FETCH");
       const resp = await fetch("http://localhost:3000/api/user/collection", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ id: defaultCollection.id, image: data }),
+        body: JSON.stringify({ id: id, image: data }),
       });
       const response = await resp.json();
       // console.log(response);
@@ -21,6 +25,10 @@ function PostById({ data }) {
           });
           const data = await res.json();
           localStorage.setItem("user", JSON.stringify(data.data));
+          setCollections(data.data.collections);
+          // setUserData(data.data)
+          console.log("SE ACTUALIZO EL LOCAL STORAGE DE USER");
+          // console.log(data.data)
         }
         getProfile();
         setSaved(true);
@@ -29,7 +37,7 @@ function PostById({ data }) {
       }
     }
   }
-  async function handleRemove() {
+  async function handleRemove(id) {
     if (document.cookie) {
       const fileUrl = data.file_url;
       const resp = await fetch("http://localhost:3000/api/user/collection", {
@@ -37,7 +45,7 @@ function PostById({ data }) {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          id_collection: defaultCollection.id,
+          id_collection: id,
           url: fileUrl,
         }),
       });
@@ -50,6 +58,8 @@ function PostById({ data }) {
           });
           const data = await res.json();
           localStorage.setItem("user", JSON.stringify(data.data));
+          setCollections(data.data.collections);
+          console.log(data.data.collections);
         }
         getProfile();
         setSaved(false);
@@ -60,6 +70,7 @@ function PostById({ data }) {
   }
 
   useEffect(() => {
+    console.log(data);
     // ! ESTO VERIFICA SI ES QUE EXISTE UNA COLLECTION POR DEFECTO DONDE GUARDAR LAS IMAGENES.
     const localStorageDefaultCollection =
       localStorage.getItem("defaultCollection");
@@ -71,10 +82,13 @@ function PostById({ data }) {
 
     const localStorageUser = localStorage.getItem("user");
     // console.log(localStorageUser)
+    // !VERIFICA SI ES QUE LA IMAGEN YA EXISTE EN LA COLECCION DEFAULT O SELECIONADA.
     if (localStorageUser) {
       const parsedLocalStorageUser = JSON.parse(localStorageUser);
       if (parsedLocalStorageUser) {
-        console.log("SOME");
+        // console.log("SOME");
+        // setUserData(parsedLocalStorageUser)
+        setCollections(parsedLocalStorageUser.collections);
         const index = parsedLocalStorageUser.collections.findIndex(
           (e) => e._id === parsedLocalStorageDefaultCollection.id
         );
@@ -136,31 +150,66 @@ function PostById({ data }) {
           </div>
         )}
         <div className="p-5 w-1/2">
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-1 justify-end">
+            {data.source && (
+              <a href={data.source} target="_blank" className=" p-2 grid place-content-center w-10 h-10 hover:bg-neutral-200  rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.5rem"
+                  height="1.5rem"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5q0-2.725 1.888-4.612T9.5 3q2.725 0 4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5q0-1.875-1.312-3.187T9.5 5Q7.625 5 6.313 6.313T5 9.5q0 1.875 1.313 3.188T9.5 14"
+                  />
+                </svg>
+              </a>
+            )}
             {data.file_url && (
               <a
-                className="bg-white px-4 py-3 rounded-full capitalize text-black shadow-lg font-semibold"
+                className="hover:bg-neutral-300 p-2 grid place-content-center w-10 h-10 rounded-full capitalize text-black font-semibold"
                 target="_blank"
                 href={data.file_url}
                 download
               >
-                descargar
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1.5rem"
+                  height="1.5rem"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m12 16l-5-5l1.4-1.45l2.6 2.6V4h2v8.15l2.6-2.6L17 11zm-6 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"
+                  />
+                </svg>
               </a>
             )}
-            {defaultCollection && <button>{defaultCollection.name}</button>}
+            {/* THIS IS A TOOLTIP :D */}
+            {defaultCollection && collections && (
+              <PopoverButton
+                defaultCollectionName={defaultCollection.name}
+                collections={collections}
+                file_url={data.file_url}
+                handleRemove={handleRemove}
+                handleSave={handleSave}
+              />
+            )}
+            {/* {defaultCollection && collections && <button>{defaultCollection.name}</button>} */}
             {saved === undefined ? (
               <button className="px-4 rounded-full text-white">loading</button>
             ) : saved ? (
               <button
-                className="px-4 rounded-full text-white font-semibold bg-neutral-900"
-                onClick={handleRemove}
+                className="px-4 py-3 capitalize rounded-full text-white font-semibold bg-neutral-900"
+                onClick={() => handleRemove(defaultCollection.id)}
               >
                 guardado
               </button>
             ) : (
               <button
-                className="px-4 rounded-full text-white font-semibold bg-red-500"
-                onClick={handleSave}
+                className="px-4 py-3 capitalize rounded-full text-white font-semibold bg-red-500"
+                onClick={() => handleSave(defaultCollection.id)}
               >
                 guardar
               </button>
@@ -186,6 +235,7 @@ function PostById({ data }) {
             </div>
           </div>
         </div>
+        {/* {data.source && data.source} */}
       </div>
     </div>
   );
