@@ -6,7 +6,6 @@ import getUser from "@/services/getUser";
 const dataEntire = await getUser(String(user));
 const data = dataEntire.data;
 console.log(data);
-
 ---
 
 <Layout title={String(user)}>
@@ -22,11 +21,14 @@ console.log(data);
               return (
                 <a
                   href={`/${user}/${e.name.replace(" ", "-")}/${e._id}`}
-                  class="bg-red-500 w-fit"
+                  class="bg-red-500 flex w-40 h-40 overflow-hidden "
                 >
                   {e.name}
                   <ul class="w-72 flex flex-wrap">
-                    {e.images.map((e) => {
+                    {e.images.map((e, i) => {
+                      if (i >= 4) {
+                        return;
+                      }
                       return (
                         <img
                           class="w-1/2 h-32 object-cover"
@@ -40,8 +42,40 @@ console.log(data);
               );
             })}
           </div>
+          <button
+            id="button-add"
+            class="bg-teal-500 font-semibold rounded-full px-4 py-3 mt-5"
+          >
+            add Collection +
+          </button>
         </div>
       )
     }
   </h2>
 </Layout>
+<script is:inline>
+  const addButton = document.querySelector("#button-add");
+  addButton.addEventListener("click", () => {
+    const name_new_gallery = prompt("nombre de la nueva galeria :D");
+    if (name_new_gallery) {
+      (async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/user/collections",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: name_new_gallery }),
+          }
+        );
+        const data = await response.json()
+        alert(data.message)
+        window.location.reload()
+        console.log(data)
+      })();
+    }
+  });
+</script>

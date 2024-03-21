@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PopoverButton from "@/components/popoverButton";
 function PostById({ data }) {
   const [defaultCollection, setDefaultCollection] = useState(null);
+  const [changeDefaultCollection, setChangeDefaultCollection] = useState(null);
   const [collections, setCollections] = useState(null);
   const [saved, setSaved] = useState(undefined);
   // const [userData, setUserData] = useState(undefined)
@@ -68,6 +69,12 @@ function PostById({ data }) {
       }
     }
   }
+  async function handleChangeDefaultCollection(obj) {
+    setDefaultCollection(obj);
+    setChangeDefaultCollection(obj);
+    localStorage.setItem("defaultCollection", JSON.stringify(obj));
+    
+  }
 
   useEffect(() => {
     console.log(data);
@@ -104,11 +111,11 @@ function PostById({ data }) {
         }
       }
     }
-  }, []);
+  }, [changeDefaultCollection]);
 
   return (
     <div className="pt-4">
-      <div className="bg-white shadow-2xl max-w-6xl mx-auto rounded-3xl overflow-hidden flex p-5">
+      <div className="bg-white shadow-2xl max-w-6xl mx-auto rounded-3xl overflow-hidden flex p-0">
         {(data && data.type_file === "webm") ||
         (data && data.type_file === "mp4") ? (
           <div className="w-1/2 relative">
@@ -123,7 +130,7 @@ function PostById({ data }) {
               src={data.file_url}
               muted
               controls
-              className="w-full rounded-3xl"
+              className="w-full rounded-l-3xl"
             />
           </div>
         ) : (
@@ -146,13 +153,17 @@ function PostById({ data }) {
               </svg>
               <p className="font-semibold">original image</p>
             </a>
-            <img src={data?.file_url} className="w-full rounded-3xl" />
+            <img src={data?.file_url} className="w-full rounded-l-3xl" />
           </div>
         )}
-        <div className="p-5 w-1/2">
+        <div className="p-10 w-1/2 ">
           <div className="flex gap-1 justify-end">
             {data.source && (
-              <a href={data.source} target="_blank" className=" p-2 grid place-content-center w-10 h-10 hover:bg-neutral-200  rounded-full">
+              <a
+                href={data.source}
+                target="_blank"
+                className=" p-2 grid place-content-center w-10 h-10 hover:bg-neutral-200  rounded-full"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="1.5rem"
@@ -194,6 +205,8 @@ function PostById({ data }) {
                 file_url={data.file_url}
                 handleRemove={handleRemove}
                 handleSave={handleSave}
+                setDefaultCollection={setDefaultCollection}
+                handleChangeDefaultCollection={handleChangeDefaultCollection}
               />
             )}
             {/* {defaultCollection && collections && <button>{defaultCollection.name}</button>} */}

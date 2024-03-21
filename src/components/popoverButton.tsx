@@ -10,6 +10,14 @@ interface PopoverButtonProps {
   file_url: string;
   handleRemove: () => void;
   handleSave: () => void;
+  setDefaultCollection: React.Dispatch<React.SetStateAction<null | {}>>;
+  handleChangeDefaultCollection: ({
+    id,
+    name,
+  }: {
+    id: string;
+    name: string;
+  }) => void;
 }
 interface PopoverBodyProps {
   collections: {
@@ -21,6 +29,14 @@ interface PopoverBodyProps {
   handleClose: () => void;
   handleRemove: (id: string) => void;
   handleSave: (id: string) => void;
+  setDefaultCollection: React.Dispatch<React.SetStateAction<null | {}>>;
+  handleChangeDefaultCollection: ({
+    id,
+    name,
+  }: {
+    id: string;
+    name: string;
+  }) => void;
 }
 function PopoverBody({
   collections,
@@ -28,7 +44,12 @@ function PopoverBody({
   file_url,
   handleSave,
   handleRemove,
+  setDefaultCollection,
+  handleChangeDefaultCollection,
 }: PopoverBodyProps) {
+  useEffect(() => {
+    console.log(collections, "collections :D");
+  }, []);
   return (
     <div
       onClick={(e) => {
@@ -48,30 +69,57 @@ function PopoverBody({
             <div
               key={i + "collectionBy" + collection._id}
               className="flex  w-full items-center justify-between gap-3 group hover:bg-neutral-200 p-2 rounded-md"
+              onClick={() => {
+                handleChangeDefaultCollection({
+                  id: collection._id,
+                  name: collection.name,
+                });
+                handleClose()
+              }}
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-lg bg-neutral-500 overflow-hidden ">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={collection.images[0].preview_url}
-                    alt=""
-                  />
+                  {collection.images.length > 0 && (
+                    <img
+                      className="w-full h-full object-cover"
+                      src={collection.images[0].preview_url}
+                      alt=""
+                    />
+                  )}
                 </div>
-                <p className="overflow-hidden text-ellipsis whitespace-nowrap capitalize">
+                <p className="overflow-hidden text-ellipsis whitespace-nowrap capitalize hover:underline">
                   {collection.name}
                 </p>
               </div>
-              {collection.images.some((e) => e.file_url === file_url) ? (
-                <button
-                  className="hidden group-hover:flex bg-neutral-900 px-4 py-2 rounded-full text-white"
-                  onClick={() => handleRemove(collection._id)}
-                >
-                  guardado
-                </button>
+              {collection.images.length > 0 ? (
+                collection.images.some((e) => e.file_url === file_url) ? (
+                  <button
+                    className="hidden group-hover:flex bg-neutral-900 px-4 py-2 rounded-full text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(collection._id);
+                    }}
+                  >
+                    guardado
+                  </button>
+                ) : (
+                  <button
+                    className="hidden group-hover:flex bg-red-500 px-4 py-2 rounded-full text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSave(collection._id);
+                    }}
+                  >
+                    guardar
+                  </button>
+                )
               ) : (
                 <button
                   className="hidden group-hover:flex bg-red-500 px-4 py-2 rounded-full text-white"
-                  onClick={() => handleSave(collection._id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSave(collection._id);
+                  }}
                 >
                   guardar
                 </button>
@@ -93,6 +141,8 @@ function PopoverButton({
   file_url,
   handleRemove,
   handleSave,
+  setDefaultCollection,
+  handleChangeDefaultCollection,
 }: PopoverButtonProps) {
   const [active, setActive] = useState<boolean>(false);
   function handleActive() {
@@ -109,7 +159,9 @@ function PopoverButton({
       className="relative flex items-center rounded-full px-4 font-semibold cursor-pointer select-none"
       onClick={handleActive}
     >
-      <label className="cursor-pointer capitalize">{defaultCollectionName}</label>
+      <label className="cursor-pointer capitalize">
+        {defaultCollectionName}
+      </label>
       <i className="cursor-pointer ml-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -128,6 +180,8 @@ function PopoverButton({
       </i>
       {active && (
         <PopoverBody
+          setDefaultCollection={setDefaultCollection}
+          handleChangeDefaultCollection={handleChangeDefaultCollection}
           handleRemove={handleRemove}
           handleSave={handleSave}
           collections={collections}
