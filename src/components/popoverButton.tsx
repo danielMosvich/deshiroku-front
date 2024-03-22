@@ -74,7 +74,7 @@ function PopoverBody({
                   id: collection._id,
                   name: collection.name,
                 });
-                handleClose()
+                handleClose();
               }}
             >
               <div className="flex items-center gap-3">
@@ -98,6 +98,11 @@ function PopoverBody({
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemove(collection._id);
+                      handleChangeDefaultCollection({
+                        id: collection._id,
+                        name: collection.name,
+                      });
+                      handleClose();
                     }}
                   >
                     guardado
@@ -108,6 +113,11 @@ function PopoverBody({
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSave(collection._id);
+                      handleChangeDefaultCollection({
+                        id: collection._id,
+                        name: collection.name,
+                      });
+                      handleClose();
                     }}
                   >
                     guardar
@@ -119,6 +129,7 @@ function PopoverBody({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleSave(collection._id);
+                    handleClose();
                   }}
                 >
                   guardar

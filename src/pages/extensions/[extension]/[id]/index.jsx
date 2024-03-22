@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import PopoverButton from "@/components/popoverButton";
+import Masonry from "react-layout-masonry";
 function PostById({ data }) {
   const [defaultCollection, setDefaultCollection] = useState(null);
   const [changeDefaultCollection, setChangeDefaultCollection] = useState(null);
   const [collections, setCollections] = useState(null);
   const [saved, setSaved] = useState(undefined);
+  const [dataByQuery, setDataByQuery] = useState(null);
   // const [userData, setUserData] = useState(undefined)
   async function handleSave(id) {
     console.log("SAVE");
@@ -73,9 +75,39 @@ function PostById({ data }) {
     setDefaultCollection(obj);
     setChangeDefaultCollection(obj);
     localStorage.setItem("defaultCollection", JSON.stringify(obj));
-    
   }
+  async function getDataByTags(tags, page) {
+    // TAGS IS A ARRAY
+    
+    const tagsList = data.tags.split(" ");
 
+    let selectedTags;
+
+    // Caso 1: Si hay más de 3 tags, selecciona aleatoriamente 3 de los primeros 10 tags
+    if (tagsList.length > 3) {
+      const firstTenTags = tagsList.slice(0, 8); // Tomar los primeros 10 tags
+      selectedTags = [];
+      for (let i = 0; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * firstTenTags.length);
+        selectedTags.push(firstTenTags.splice(randomIndex, 1)[0]);
+      }
+    } else {
+      // Caso 2: Si hay 3 o menos tags, simplemente selecciona todos los tags disponibles
+      selectedTags = tagsList;
+    }
+    console.log(selectedTags);
+    const response = await fetch(
+      `http://localhost:3000/api/deshiroku/${
+        data.extension
+      }/search/${selectedTags.join("+")}/${page}`,
+      { method: "GET" }
+    );
+    const dat = await response.json();
+    console.log(dat);
+    if (dat.success) {
+      setDataByQuery(dat.data);
+    }
+  }
   useEffect(() => {
     console.log(data);
     // ! ESTO VERIFICA SI ES QUE EXISTE UNA COLLECTION POR DEFECTO DONDE GUARDAR LAS IMAGENES.
@@ -112,7 +144,9 @@ function PostById({ data }) {
       }
     }
   }, [changeDefaultCollection]);
-
+  useEffect(() => {
+    getDataByTags(data.tags, 1);
+  }, []);
   return (
     <div className="pt-4">
       <div className="bg-white shadow-2xl max-w-6xl mx-auto rounded-3xl overflow-hidden flex p-0">
@@ -249,6 +283,43 @@ function PostById({ data }) {
           </div>
         </div>
         {/* {data.source && data.source} */}
+      </div>
+
+      <h2 className="mt-10 pb-5 text-center font-semibold text-xl">
+        Mas para explorar{" "}
+      </h2>
+      <div className="bg-purple-500">
+        {dataByQuery && (
+          <Masonry
+            className="w-full h-fit"
+            columns={{
+              200: 1,
+              400: 2,
+              700: 3,
+              1000: 4,
+              1250: 5,
+              1500: 6,
+              1750: 7,
+            }}
+            gap={16}
+          >
+            {dataByQuery.map((element, index) => {
+              return (
+                <a
+                  className=""
+                  href={`http://localhost:4321/extensions/${element.extension}/${element.id}`}
+                  key={element.id + index}
+                >
+                  <img
+                    className="w-full rounded-xl max-h-[500px] object-cover"
+                    src={element.preview_url}
+                    alt="some"
+                  />
+                </a>
+              );
+            })}
+          </Masonry>
+        )}
       </div>
     </div>
   );
