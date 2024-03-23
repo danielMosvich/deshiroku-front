@@ -129,6 +129,10 @@ function PopoverBody({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleSave(collection._id);
+                    handleChangeDefaultCollection({
+                      id: collection._id,
+                      name: collection.name,
+                    });
                     handleClose();
                   }}
                 >

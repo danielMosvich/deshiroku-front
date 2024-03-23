@@ -1,8 +1,41 @@
 import { useState, useEffect } from "react";
-import Masonry from "react-layout-masonry"
+import Masonry from "react-layout-masonry";
 
-function Collection({ id }) {
+function Collection({ id, user }) {
   const [data, setData] = useState(null);
+  async function handleDeleteCollection() {
+    const response = await fetch("http://localhost:3000/api/user/collections", {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
+    const dat = await response.json();
+    localStorage.setItem("user", JSON.stringify(dat));
+    function detectDefaultCollection() {
+      const localCollection = localStorage.getItem("defaultCollection");
+      const parsedLocalCollection = JSON.parse(localCollection);
+      const exist = dat.collections.some(
+        (e) => e._id === parsedLocalCollection.id
+      );
+      console.log(exist);
+      if (!exist) {
+        if (dat.collections[0]) {
+          localStorage.setItem(
+            "defaultCollection",
+            JSON.stringify(dat.collections[0])
+          );
+        } else {
+          localStorage.removeItem("defaultCollection");
+        }
+      }
+    }
+    detectDefaultCollection();
+    alert("deleted collection");
+    window.location.href = `/${user}`
+  }
   useEffect(() => {
     async function getCollection() {
       const res = await fetch(
@@ -13,7 +46,6 @@ function Collection({ id }) {
         }
       );
       const data = await res.json();
-      // console.log(data);
       setData(data);
     }
     getCollection();
@@ -22,47 +54,79 @@ function Collection({ id }) {
     <div>
       {data ? (
         <div>
-          <h2 className="text-3xl">{data.name} collection</h2>
+          <h2 className="text-3xl mt-10 mb-5 text-center capitalize font-semibold">
+            {data.name} collection
+          </h2>
+          {/* AVATAR */}
+          <div className="bg-red-500 w-12 h-12 rounded-full grid place-content-center font-bold uppercase mx-auto">
+            {data.name.split("")[0]}
+          </div>
+          <div className="flex justify-center gap-3 my-5">
+            <div className="bg-neutral-100 p-3 w-fit font-semibold rounded-xl">
+              {String(data.images.length)} images
+            </div>
+            <button
+              onClick={handleDeleteCollection}
+              className="bg-rose-500 text-white py-3 px-4 w-fit font-semibold rounded-xl flex items-center gap-1"
+            >
+              {/* <p>delete</p> */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M9 3v1H4v2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1V4h-5V3zM7 6h10v13H7zm2 2v9h2V8zm4 0v9h2V8z"
+                />
+              </svg>
+            </button>
+          </div>
           {data.images ? (
-        <div className="lg:px-20 sm:px-10  px-5">
-          <Masonry
-            columns={{
-              200: 1,
-              400: 2,
-              700: 3,
-              1000: 4,
-              1250: 5,
-              1500: 6,
-              1750: 7,
-            }}
-            gap={16}
-          >
-            {data.images.map((e, index) => {
-              return (
-                <a href={`/extensions/${e.extension}/${e.id}`} key={e.id} className="">
-                  <img
-                    className="w-full rounded-xl max-h-[500px] object-cover"
-                    src={e.preview_url}
-                    alt={e.owner + "image"}
-                    loading="lazy"
-                  />
-                  <div className="flex gap-1 items-center mt-2">
-                    <div className="rounded-full bg-neutral-200 w-8 h-8 grid place-content-center">
-                      <p className="uppercase font-semibold">
-                        {e.owner.split("")[0]}
-                        {index}
-                      </p>
-                    </div>
-                    <h2>{e.owner}</h2>
-                  </div>
-                </a>
-              );
-            })}
-          </Masonry>
-        </div>
-      ) : (
-        <div>loading</div>
-      )}
+            <div className="lg:px-20 sm:px-10  px-5">
+              <Masonry
+                columns={{
+                  200: 1,
+                  400: 2,
+                  700: 3,
+                  1000: 4,
+                  1250: 5,
+                  1500: 6,
+                  1750: 7,
+                }}
+                gap={16}
+              >
+                {data.images.map((e, index) => {
+                  return (
+                    <a
+                      href={`/extensions/${e.extension}/${e.id}`}
+                      key={e.id}
+                      className=""
+                    >
+                      <img
+                        className="w-full rounded-xl max-h-[500px] object-cover"
+                        src={e.preview_url}
+                        alt={e.owner + "image"}
+                        loading="lazy"
+                      />
+                      <div className="flex gap-1 items-center mt-2">
+                        <div className="rounded-full bg-neutral-200 w-8 h-8 grid place-content-center">
+                          <p className="uppercase font-semibold">
+                            {e.owner.split("")[0]}
+                            {index}
+                          </p>
+                        </div>
+                        <h2>{e.owner}</h2>
+                      </div>
+                    </a>
+                  );
+                })}
+              </Masonry>
+            </div>
+          ) : (
+            <div>loading</div>
+          )}
         </div>
       ) : (
         <div>loading</div>

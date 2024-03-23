@@ -2,14 +2,14 @@
 import Collection from "./index";
 import Layout from "@/layouts/Layout.astro";
 // import getCollection from "@/services/getCollection";
-const { collection, id } = Astro.params;
+const { user, collection, id } = Astro.params;
 // console.log(collection)
 // const data = await getCollection(id);
 // console.log(data)
 ---
 
 <Layout title={String(collection)}>
-  <Collection client:load id={id}/>
+  <Collection client:load id={id} user={user} />
 </Layout>
 <!-- <script is:inline>
   async function getCollection() {

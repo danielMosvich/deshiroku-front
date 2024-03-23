@@ -35,9 +35,10 @@ import Layout from "../layouts/Layout.astro";
     const expirationDateString = expirationDate.toUTCString();
     const cookieString = `token=${cookie}; expires=${expirationDateString}; path=/`;
     document.cookie = cookieString;
-    // window.location.href = "/"
     // console.log(cookie);
     console.log("LOGIN", document.cookie);
+    alert("LOGIN")
+    window.location.href = "/"
   }
 </script>
 <!-- headers: {

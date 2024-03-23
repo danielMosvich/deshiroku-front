@@ -15,10 +15,14 @@ export interface UserProps {
 }
 
 export interface Collection {
-    name:   string;
-    images: any[];
-    _id:    string;
+    name: string;
+    images: {
+        file_url: string;
+        preview_url: string;
+    }[];
+    _id: string;
 }
+
 
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime

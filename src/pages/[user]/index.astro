@@ -5,39 +5,51 @@ const { user } = Astro.params;
 import getUser from "@/services/getUser";
 const dataEntire = await getUser(String(user));
 const data = dataEntire.data;
-console.log(data);
+console.log("xd", data);
 ---
 
 <Layout title={String(user)}>
   <h2>
     {
-      data && (
+      data !== undefined ? (
         <div>
           <h2>{data.name}</h2>
           <h2>{data.username}</h2>
 
-          <div>
-            {data.collections.map((e) => {
+          <div class="flex gap-10">
+            {data.collections.map((element) => {
               return (
                 <a
-                  href={`/${user}/${e.name.replace(" ", "-")}/${e._id}`}
-                  class="bg-red-500 flex w-40 h-40 overflow-hidden "
+                  href={`/${user}/${element.name.replace(" ", "-")}/${element._id}`}
+                  class="flex flex-col "
                 >
-                  {e.name}
-                  <ul class="w-72 flex flex-wrap">
-                    {e.images.map((e, i) => {
-                      if (i >= 4) {
-                        return;
-                      }
-                      return (
-                        <img
-                          class="w-1/2 h-32 object-cover"
-                          src={e.preview_url}
-                          alt=""
-                        />
-                      );
-                    })}
-                  </ul>
+                  <div class="flex gap-1 rounded-xl overflow-hidden ring-1 ring-neutral-200 shadow-lg h-[164px]">
+                    <div>
+                      {element.images.slice(0, 3).map((e, i) => {
+                        if (i === 0) {
+                          return <img class="h-full" src={e.preview_url} />;
+                        }
+                      })}
+                    </div>
+                    <div class="h-fit flex flex-col gap-1">
+                      {element.images.slice(0, 3).map((e, i) => {
+                        if (i !== 0) {
+                          return (
+                            <img
+                              class={`object-cover w-20 h-20`}
+                              src={e.preview_url}
+                            />
+                          );
+                        }
+                      })}
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <p class="font-semibold capitalize text-xl mt-5">
+                      {element.name}
+                    </p>
+                    <p class="text-sm">{String(element.images.length)} images</p>
+                  </div>
                 </a>
               );
             })}
@@ -49,6 +61,8 @@ console.log(data);
             add Collection +
           </button>
         </div>
+      ) : (
+        <div>loading</div>
       )
     }
   </h2>
@@ -71,10 +85,11 @@ console.log(data);
             body: JSON.stringify({ name: name_new_gallery }),
           }
         );
-        const data = await response.json()
-        alert(data.message)
-        window.location.reload()
-        console.log(data)
+        const data = await response.json();
+        alert(data.message);
+        localStorage.setItem("user",JSON.stringify(data.dat))
+        window.location.reload();
+        console.log(data);
       })();
     }
   });
