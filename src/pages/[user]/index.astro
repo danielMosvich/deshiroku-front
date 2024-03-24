@@ -13,10 +13,20 @@ console.log("xd", data);
     {
       data !== undefined ? (
         <div>
-          <h2>{data.name}</h2>
-          <h2>{data.username}</h2>
-
-          <div class="flex gap-10">
+          <div class="uppercase mx-auto mt-10 w-28 h-28 text-2xl bg-rose-500 grid place-content-center font-bold rounded-full">
+            {data.name.split("")[0]}
+          </div>
+          <h2 class="text-3xl capitalize mx-auto w-fit mt-5 font-semibold">
+            {data.name}
+          </h2>
+          <h2 class="text-lg mx-auto w-fit mb-10">{data.username}</h2>
+          <button
+            id="button-add"
+            class="bg-teal-500 font-semibold rounded-full py-3 mt-5 mx-10 p-4 flex mb-5"
+          >
+            add Collection +
+          </button>
+          <div class="flex gap-10 px-10">
             {data.collections.map((element) => {
               return (
                 <a
@@ -45,21 +55,17 @@ console.log("xd", data);
                     </div>
                   </div>
                   <div class="flex flex-col gap-1">
-                    <p class="font-semibold capitalize text-xl mt-5">
+                    <p class="font-semibold capitalize text-xl mt-2">
                       {element.name}
                     </p>
-                    <p class="text-sm">{String(element.images.length)} images</p>
+                    <p class="text-sm">
+                      {String(element.images.length)} images
+                    </p>
                   </div>
                 </a>
               );
             })}
           </div>
-          <button
-            id="button-add"
-            class="bg-teal-500 font-semibold rounded-full px-4 py-3 mt-5"
-          >
-            add Collection +
-          </button>
         </div>
       ) : (
         <div>loading</div>
@@ -87,7 +93,7 @@ console.log("xd", data);
         );
         const data = await response.json();
         alert(data.message);
-        localStorage.setItem("user",JSON.stringify(data.dat))
+        localStorage.setItem("user", JSON.stringify(data.dat));
         window.location.reload();
         console.log(data);
       })();

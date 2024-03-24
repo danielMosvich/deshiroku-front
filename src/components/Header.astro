@@ -1,9 +1,33 @@
 ---
-
+const { extension } = Astro.params;
+import Searcher from "./searcher";
 ---
 
-<header class="bg-red-500 w-full h-20 fixed flex items-center">
-  <input type="text" placeholder="search" class="w-full" />
+<header
+  class="bg-white/90 backdrop-blur-lg w-full h-20 fixed flex gap-0 px-10 items-center z-40"
+>
+  <a
+  href="/"
+    class="capitalize font-semibold bg-neutral-950 text-white px-4 py-2 rounded-full"
+    >Inicio
+  </a>
+  {
+    extension ? (
+      <a
+        href={`/extensions/${extension}`}
+        class="capitalize font-semibold  px-4 py-2 rounded-full"
+      >
+        {extension}
+      </a>
+    ) : (
+      <a href={`/`} class="capitalize font-semibold  px-4 py-2 rounded-full">
+        extensions
+      </a>
+    )
+  }
+  <button class="capitalize font-semibold px-4 py-2 rounded-full">tags</button>
+  
+  <Searcher client:load />
   <div class="avatar"></div>
 </header>
 <style></style>
@@ -47,3 +71,6 @@
     }
   }
 </script>
+<!-- <script is:inline>
+ 
+</script> -->

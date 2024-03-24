@@ -34,7 +34,32 @@ function Collection({ id, user }) {
     }
     detectDefaultCollection();
     alert("deleted collection");
-    window.location.href = `/${user}`
+    window.location.href = `/${user}`;
+  }
+  async function handleEditCollection() {
+    
+    const newName = prompt("NUEVO NOMBRE DE LA COLECCION");
+    if (newName) {
+      const response = await fetch(
+        "http://localhost:3000/api/user/collections",
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: id,
+            name: newName,
+          }),
+        }
+      );
+      const dat = await response.json();
+      if (dat.success) {
+        localStorage.setItem("user", JSON.stringify(dat.r));
+        window.location.reload();
+      } else {
+        alert(dat.message);
+      }
+    }
   }
   useEffect(() => {
     async function getCollection() {
@@ -54,8 +79,11 @@ function Collection({ id, user }) {
     <div>
       {data ? (
         <div>
-          <h2 className="text-3xl mt-10 mb-5 text-center capitalize font-semibold">
-            {data.name} collection
+          <h2
+            onClick={handleEditCollection}
+            className="text-3xl mt-10 mb-5 text-center capitalize font-semibold hover:underline cursor-pointer w-fit mx-auto"
+          >
+            {data.name}
           </h2>
           {/* AVATAR */}
           <div className="bg-red-500 w-12 h-12 rounded-full grid place-content-center font-bold uppercase mx-auto">
@@ -100,7 +128,7 @@ function Collection({ id, user }) {
                 {data.images.map((e, index) => {
                   return (
                     <a
-                      href={`/extensions/${e.extension}/${e.id}`}
+                      href={`/extensions/${e.extension}/post/${e.id}`}
                       key={e.id}
                       className=""
                     >

@@ -1,32 +1,45 @@
-import getImages from "@/services/getImages";
+import getImagesByQuery from "@/services/getImagesByQuery";
 import { useState, useEffect } from "react";
 import Masonry from "react-layout-masonry";
-function Extension({ data: dataByAstro, extension }) {
+function Extension({ extension }) {
   const [loadClient, setClientLoad] = useState(false);
   const [loadImages, setLoadImages] = useState(false);
   const [data, setData] = useState([]);
+  const [query, setQuery] = useState(null);
 
   const [page, setPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  async function GetImages(page) {
-    getImages(extension, page).then((res) => {
-      // console.log(res);
-      if (page === 1) {
-        if (res.success) {
-          setData(res.data);
+  async function GetImages() {
+    // console.log(page, query);
+    if (query && page) {
+      getImagesByQuery(extension, query, page).then((res) => {
+        if (page === 1) {
+          if (res.success) {
+            setData(res.data);
+            // console.log(res.data);
+          }
+        } else {
+          // console.log(res.data);
+          if (res.success) {
+            setData((prevData) => [...prevData, ...res.data]);
+          }
         }
-      } else {
-        setData((prevData) => [...prevData, ...res.data]);
-      }
-    });
+      });
+    }
   }
   useEffect(() => {
+    const href =
+      window.location.href.split("/")[
+        window.location.href.split("/").length - 1
+      ];
+    const tags = href.split("&").map((e) => e.split("?")[1]);
+    setQuery(tags.join("+"));
     if (extension) {
       setClientLoad(true);
-      GetImages(page);
+      GetImages(page, tags.join("+"));
     }
-  }, []);
+  }, [query, page]);
 
   useEffect(() => {
     if (data) {

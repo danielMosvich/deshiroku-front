@@ -6,6 +6,7 @@ const { extension, id } = Astro.params;
 // console.log(extension, id);
 const dataImage = await getPostById(extension, String(id));
 const data = dataImage?.data;
+// console.log(data)
 ---
 
 <Layout title={`${extension} - post ${id}`}>

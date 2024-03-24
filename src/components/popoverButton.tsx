@@ -1,3 +1,4 @@
+import type { UserProps } from "@/types/UserProps";
 import { useEffect, useState } from "react";
 interface PopoverButtonProps {
   defaultCollectionName: string;
@@ -18,6 +19,8 @@ interface PopoverButtonProps {
     id: string;
     name: string;
   }) => void;
+  defaultCollection: { id: string; name: string };
+  user:UserProps
 }
 interface PopoverBodyProps {
   collections: {
@@ -57,7 +60,7 @@ function PopoverBody({
       }}
     >
       <div
-        className="absolute shadow-2xl bg-white top-[100%] left-[-60%] mx-auto w-72 rounded-xl p-2 flex flex-col justify-center mt-2 z-40 select-none"
+        className="absolute shadow-2xl bg-white top-[100%] left-[-60%] mx-auto w-72 rounded-xl p-2 flex flex-col justify-center mt-2 z-40 select-none overflow-auto"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -152,14 +155,17 @@ function PopoverBody({
 }
 function PopoverButton({
   defaultCollectionName,
+  defaultCollection,
   collections,
   file_url,
   handleRemove,
   handleSave,
   setDefaultCollection,
   handleChangeDefaultCollection,
+  user
 }: PopoverButtonProps) {
   const [active, setActive] = useState<boolean>(false);
+  
   function handleActive() {
     setActive(true);
   }
@@ -193,6 +199,25 @@ function PopoverButton({
           </g>
         </svg>
       </i>
+      <a href={`/${user.name}/${defaultCollectionName}/${defaultCollection.id}`} className="ml-3">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="icon icon-tabler icons-tabler-outline icon-tabler-external-link"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+          <path d="M11 13l9 -9" />
+          <path d="M15 4h5v5" />
+        </svg>
+      </a>
       {active && (
         <PopoverBody
           setDefaultCollection={setDefaultCollection}
