@@ -10,5 +10,5 @@ export default defineConfig({
     experimentalReactChildren: true
   })],
   output: 'server',
-  adapter: vercel(),
+  // adapter: vercel(),
 });
