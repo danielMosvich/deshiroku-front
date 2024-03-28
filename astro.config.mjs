@@ -11,5 +11,4 @@ export default defineConfig({
   })],
   output: 'server',
   adapter: vercel(),
-  env:"https://test-server-ibk3.onrender.com"
 });
