@@ -62,7 +62,7 @@ function Searcher() {
   }
   useEffect(() => {
     // const input_search = document.querySelector("#input_search");
-    const extensionsArray = ["rule34", "realbooru", "safebooru"];
+    const extensionsArray = ["rule34", "realbooru", "safebooru","gelbooru"];
     const currentURL = window.location.href;
     const url = new URL(currentURL);
     const pathname = url.pathname;
@@ -147,7 +147,7 @@ function Searcher() {
             {tags.map((e, i) => (
               <div
                 key={i}
-                className=" cursor-pointer font-semibold flex items-center"
+                className=" cursor-pointer font-semibold flex items-center whitespace-nowrap text-ellipsis"
               >
                 <label
                   className={`cursor-pointer px-3 py-1 rounded-full ${getTagStyle(

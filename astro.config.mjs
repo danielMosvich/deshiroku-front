@@ -10,5 +10,6 @@ export default defineConfig({
     experimentalReactChildren: true
   })],
   output: 'server',
-  adapter: vercel()
+  adapter: vercel(),
+  env:"https://test-server-ibk3.onrender.com"
 });

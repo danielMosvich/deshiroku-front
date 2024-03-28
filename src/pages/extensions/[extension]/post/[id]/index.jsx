@@ -5,6 +5,7 @@
 //               4 = character
 //               5 = meta
 
+// https://lens.google.com/uploadbyurl?url=https://realbooru.com/thumbnails/79/f9/thumbnail_79f9ddea59400483cc497cf5f566c84d.jpg
 import { useEffect, useState } from "react";
 import PopoverButton from "@/components/popoverButton";
 import Masonry from "react-layout-masonry";
@@ -20,20 +21,31 @@ function PostById({ data }) {
     console.log("SAVE");
     if (document.cookie) {
       console.log("FETCH");
-      const resp = await fetch("http://localhost:3000/api/user/collection", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ id: id, image: data }),
-      });
+      const resp = await fetch(
+        `${import.meta.env.PUBLIC_SERVER_URL}/api/user/collection`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // "Access-Control-Allow-Origin": "http://localhost:4321",
+          },
+          
+          credentials: "include",
+          mode:"cors",
+          body: JSON.stringify({ id: id, image: data }),
+        }
+      );
       const response = await resp.json();
       // console.log(response);
       if (response.success) {
         async function getProfile() {
-          const res = await fetch("http://localhost:3000/api/user/profile", {
-            method: "GET",
-            credentials: "include",
-          });
+          const res = await fetch(
+            `${import.meta.env.PUBLIC_SERVER_URL}/api/user/profile`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
           const data = await res.json();
           localStorage.setItem("user", JSON.stringify(data.data));
           setCollections(data.data.collections);
@@ -51,22 +63,28 @@ function PostById({ data }) {
   async function handleRemove(id) {
     if (document.cookie) {
       const fileUrl = data.file_url;
-      const resp = await fetch("http://localhost:3000/api/user/collection", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          id_collection: id,
-          url: fileUrl,
-        }),
-      });
+      const resp = await fetch(
+        `${import.meta.env.PUBLIC_SERVER_URL}/api/user/collection`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            id_collection: id,
+            url: fileUrl,
+          }),
+        }
+      );
       const response = await resp.json();
       if (response.success) {
         async function getProfile() {
-          const res = await fetch("http://localhost:3000/api/user/profile", {
-            method: "GET",
-            credentials: "include",
-          });
+          const res = await fetch(
+            `${import.meta.env.PUBLIC_SERVER_URL}/api/user/profile`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
           const data = await res.json();
           localStorage.setItem("user", JSON.stringify(data.data));
           setCollections(data.data.collections);
@@ -104,7 +122,7 @@ function PostById({ data }) {
       // console.log(tagsFinaly);
       try {
         const response = await fetch(
-          `http://localhost:3000/api/deshiroku/${
+          `${import.meta.env.PUBLIC_SERVER_URL}/api/deshiroku/${
             data.extension
           }/search/${tagsFinaly.join("+")}/${page}`
         );
@@ -438,7 +456,7 @@ function PostById({ data }) {
                     <div>
                       <h2 className=" font-semibold capitalize">general</h2>
                       <div className="my-2 flex flex-wrap gap-2">
-                        {data.tags.tags.slice(0,20).map((el, i) => {
+                        {data.tags.tags.slice(0, 20).map((el, i) => {
                           if (el.type === "0") {
                             return (
                               <a

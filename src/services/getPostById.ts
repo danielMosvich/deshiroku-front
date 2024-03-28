@@ -6,7 +6,7 @@ async function getPostById(
 ) {
   if (extension && id) {
     const res = await fetch(
-      `http://localhost:3000/api/deshiroku/${extension}/post/${id}`
+      `${import.meta.env.PUBLIC_SERVER_URL}/api/deshiroku/${extension}/post/${id}`
     );
     const data: { success: boolean; data: ImagesProps } = await res.json();
     return data;

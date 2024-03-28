@@ -2,7 +2,7 @@
 
 async function getCollection(id: string) {
   // console.log(id, "xd");
-  const res = await fetch("http://localhost:3000/api/user/collection/some", {
+  const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/user/collection/some`, {
           method: "GET",
           credentials: "include",
         });

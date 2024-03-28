@@ -6,7 +6,7 @@ async function getImagesByQuery(
   page: number
 ) {
   const res = await fetch(
-    `http://localhost:3000/api/deshiroku/${extension}/search/${String(
+    `${import.meta.env.PUBLIC_SERVER_URL}/api/deshiroku/${extension}/search/${String(
       query
     )}/${page}`
   );

@@ -11,15 +11,20 @@ function Extension({ data: dataByAstro, extension }) {
 
   async function GetImages(page) {
     getImages(extension, page).then((res) => {
-      // console.log(res);
+      console.log(res);
       if (page === 1) {
-        if (res.success) {
+        if (res) {
           setData(res.data);
         }
       } else {
         setData((prevData) => [...prevData, ...res.data]);
       }
     });
+    const response = await getImages(extension, page)
+    const data = response
+    const url = (import.meta.env.PUBLIC_SERVER_URL)
+    console.log(url)
+    console.log(data)
   }
   useEffect(() => {
     if (extension) {
