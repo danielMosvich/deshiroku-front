@@ -1,6 +1,10 @@
 ---
+// import type { GetStaticPaths } from "astro";
+// export function getStaticPaths() {
+//   return [{ params: "one" }];
+// }
 import Layout from "@/layouts/Layout.astro";
-const { user } = Astro.params;
+const { user } = Astro.params
 // console.log(id)
 import getUser from "@/services/getUser";
 const dataEntire = await getUser(String(user));
